@@ -5,7 +5,7 @@ function path = FindRSPath(x,y,phi,veh)
     rmin = veh.MIN_CIRCLE; %minimum turning radius
     x = x/rmin;
     y = y/rmin;
-    % ±éÀú5ÖÖ·½·¨µ½´ïÄ¿±êµã£¬È»ºóÑ¡È¡Â·¾¶×î¶ÌµÄÒ»Ìõ
+    % éå†5ç§æ–¹æ³•åˆ°è¾¾ç›®æ ‡ç‚¹ï¼Œç„¶åé€‰å–è·¯å¾„æœ€çŸ­çš„ä¸€æ¡
     [isok1,path1] = CSC(x,y,phi);
     [isok2,path2] = CCC(x,y,phi);
     [isok3,path3] = CCCC(x,y,phi);
@@ -14,7 +14,7 @@ function path = FindRSPath(x,y,phi,veh)
     isoks = [isok1, isok2, isok3, isok4, isok5];
     paths = {path1, path2, path3, path4, path5};
     Lmin = inf;
-    % ÕÒ³ö5ÌõÂ·¾¶×î¶ÌµÄÇúÏß
+    % æ‰¾å‡º5æ¡è·¯å¾„æœ€çŸ­çš„æ›²çº¿
     for i = 1:5
         if isoks(i) == true
             elem = paths{i};
@@ -27,7 +27,7 @@ function path = FindRSPath(x,y,phi,veh)
 %     PlotPath(path,veh);
 end
 
-% ¿ØÖÆ½Ç¶ÈxÈ¡Öµ·¶Î§ÊÇ[-pi,pi]
+% æ§åˆ¶è§’åº¦xå–å€¼èŒƒå›´æ˜¯[-pi,pi]
 function v = mod2pi(x)
     v = rem(x,2*pi);
     if v < -pi
@@ -43,7 +43,8 @@ function [tau,omega] = tauOmega(u,v,xi,eta,phi)
     A = sin(u)-sin(delta);
     B = cos(u)-cos(delta)-1;
     t1 = atan2(eta*A-xi*B,xi*A+eta*B);
-    t2 = 2*(cos(delta)-2*cos(v)-2*cos(u))+3;
+    t2 = (2*cos(delta)-2*cos(v)-2*cos(u))+3; % 2åº”è¯¥åœ¨æ‹¬å·é‡Œé¢ï¼Œå¦åˆ™ä¼šäº§ç”Ÿéƒ¨åˆ†é”™è¯¯è·¯å¾„
+%    t2 = 2*(cos(delta)-2*cos(v)-2*cos(u))+3;
     if t2 < 0
         tau = mod2pi(t1+pi);
     else
@@ -54,10 +55,10 @@ end
 
 % formula 8.1
 function [isok,t,u,v] = LpSpLp(x,y,phi)
-    [t,u] = cart2pol(x-sin(phi),y-1+cos(phi)); % ½«µÑ¿¨¶û×ø±ê×ª»»Îª¼«×ø±ê,·µ»ØthetaºÍrho,ÂÛÎÄ·µ»ØµÄÊÇ[u,t],ÊÇÒòÎªcart2polº¯Êı·µ»ØµÄÖµµÄË³Ğò²»Í¬µ¼ÖÂÓëÔ­ÎÄ²»Í¬£¬±äÁ¿´ú±íµÄº¬Òå»¹ÊÇÒ»Ñù£¬t´ú±í»¡¶È£¬u´ú±íÖ±ĞĞµÄ¾àÀë
-    if t >= 0 % ±ØĞëÊÇ×ó×ª,t>=0´ú±í×ó×ª
+    [t,u] = cart2pol(x-sin(phi),y-1+cos(phi)); % å°†ç¬›å¡å°”åæ ‡è½¬æ¢ä¸ºæåæ ‡,è¿”å›thetaå’Œrho,è®ºæ–‡è¿”å›çš„æ˜¯[u,t],æ˜¯å› ä¸ºcart2polå‡½æ•°è¿”å›çš„å€¼çš„é¡ºåºä¸åŒå¯¼è‡´ä¸åŸæ–‡ä¸åŒï¼Œå˜é‡ä»£è¡¨çš„å«ä¹‰è¿˜æ˜¯ä¸€æ ·ï¼Œtä»£è¡¨å¼§åº¦ï¼Œuä»£è¡¨ç›´è¡Œçš„è·ç¦»
+    if t >= 0 % å¿…é¡»æ˜¯å·¦è½¬,t>=0ä»£è¡¨å·¦è½¬
         v = mod2pi(phi-t);
-        if v >= 0 % ·ûºÅ´ú±íÇ°½øºÍºóÍË
+        if v >= 0 % ç¬¦å·ä»£è¡¨å‰è¿›å’Œåé€€
             isok = true;
             return
         end
@@ -76,7 +77,7 @@ function [isok,t,u,v] = LpSpRp(x,y,phi)
         theta = atan2(2,u);
         t = mod2pi(t1+theta);
         v = mod2pi(t-phi);
-        if t >= 0 && v >= 0 % ·ûºÅ´ú±íÇ°½øºÍºóÍË
+        if t >= 0 && v >= 0 % ç¬¦å·ä»£è¡¨å‰è¿›å’Œåé€€
             isok = true;
             return
         end
@@ -268,7 +269,7 @@ function [isok,t,u,v] = LpRupLumRm(x,y,phi)
     if rho <= 1
         u = acos(rho);
         [t,v] = tauOmega(u,-u,xi,eta,phi);
-        if t >= 0 && v <= 0 % ·ûºÅ´ú±íÇ°½øºÍºóÍË
+        if t >= 0 && v <= 0 % ç¬¦å·ä»£è¡¨å‰è¿›å’Œåé€€
             isok = true;
             return
         end
